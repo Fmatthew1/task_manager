@@ -13,5 +13,5 @@ if ($todo->complete($id)) {
     echo "Error completing todo";
 }
 
-?>
+
 

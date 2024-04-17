@@ -16,6 +16,9 @@ $todos = $todo->findAll(); // Get all todos
 <body>
     <div class="container mt-5">
         <h1>Todo List</h1>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="create.php"><button class="btn btn-primary" type="button">Create</button></a>
+        </div>
         <table class="table">
             <thead>
                 <tr>
