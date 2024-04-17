@@ -7,6 +7,9 @@
 <body>
     <div class="container mt-5">
         <h1>Create Todo</h1>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="index.php"><button class="btn btn-primary" type="button">Back</button></a>
+        </div>
         <form action="create_process.php" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
