@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value="<?php echo $currentTodo['name']; ?>" required>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo $currentTodo->name; ?>" required>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
