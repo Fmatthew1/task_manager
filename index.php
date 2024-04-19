@@ -36,8 +36,8 @@ $todos = $todo->findAll(); // Get all todos
                         <td><?php echo $todo->created_at; ?></td>
                         <td><?php echo $todo->completed_at; ?></td>
                         <td>
-                            <a href="update.php?id=<?php echo $todo->id; ?>" class="btn btn-sm btn-info">Update</a>
                             <?php if (!$todo->is_completed) { ?>
+                                <a href="update.php?id=<?php echo $todo->id; ?>" class="btn btn-sm btn-info">Update</a>
                                 <a href="complete.php?id=<?php echo $todo->id; ?>" class="btn btn-sm btn-success">Complete</a>
                             <?php } ?>
                         </td>
