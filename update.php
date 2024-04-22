@@ -6,9 +6,15 @@ $todo = new Todo($conn); // Create a new Todo instance
 
 $id = $_GET['id']; // Get the ID of the todo from the URL parameter
 $currentTodo = $todo->find($id); // Get the current todo
-
+//var_dump($currentTodo);
 if (!$currentTodo) {
     // If todo not found, redirect to index page
+    header("Location: index.php");
+    exit();
+}
+
+if ($currentTodo->is_completed) {
+    // if todo is completed redirect to index page or display a message
     header("Location: index.php");
     exit();
 }
