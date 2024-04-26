@@ -21,14 +21,28 @@ if ($currentTodo->is_completed) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If form is submitted, update the todo
+
     $name = $_POST['name'];
-    if ($todo->update($id, $name)) {
-        header("Location: index.php");
-        exit();
+    
+    // Retrieve the todo object by its ID
+    $todo = new Todo($conn);
+    if ($todo->findById($id)) {
+        // Update the properties of the todo object
+        $todo->setName($name);
+        // Assuming other properties like is_completed and completed_at can also be updated if needed
+        
+        // Call the update method on the todo object
+        if ($todo->update()) {
+            header("Location: index.php");
+            exit();
+        } else {
+            echo "Error updating todo";
+        }
     } else {
-        echo "Error updating todo";
+        echo "Todo not found";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html>
