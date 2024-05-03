@@ -2,10 +2,7 @@
 include 'Db.php'; // Include the database connection script
 include 'todo.php'; // Include the Todo class
 
-$todo = new Todo($conn); // Create a new Todo instance
-
-$todos = $todo->findAll(); // Get all todos
-
+$todos = Todo::findAll($conn); // Get all todos
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,14 +28,14 @@ $todos = $todo->findAll(); // Get all todos
             <tbody>
                 <?php foreach ($todos as $todo) { ?>
                     <tr>
-                        <td><?php echo $todo->name; ?></td>
-                        <td><?php echo $todo->is_completed ? 'Completed' : 'Pending'; ?></td>
-                        <td><?php echo $todo->created_at; ?></td>
-                        <td><?php echo $todo->completed_at; ?></td>
+                        <td><?php echo $todo->getName(); ?></td>
+                        <td><?php echo $todo->getIsCompleted() ? 'Completed' : 'Pending'; ?></td>
+                        <td><?php echo $todo->getCreatedAt(); ?></td>
+                        <td><?php echo $todo->getCompletedAt(); ?></td>
                         <td>
-                            <?php if (!$todo->is_completed) { ?>
-                                <a href="update.php?id=<?php echo $todo->id; ?>" class="btn btn-sm btn-info">Update</a>
-                                <a href="complete.php?id=<?php echo $todo->id; ?>" class="btn btn-sm btn-success">Complete</a>
+                        <?php if (!$todo->getIsCompleted()) { ?>
+                                <a href="update.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-info">Update</a>
+                                <a href="complete.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-success">Complete</a>
                             <?php } ?>
                         </td>
                     </tr>
