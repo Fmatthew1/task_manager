@@ -2,10 +2,8 @@
 include 'Db.php'; // Include the database connection script
 include 'todo.php'; // Include the Todo class
 
-$todo = new Todo($conn); // Create a new Todo instance
-
 $id = $_GET['id']; // Get the ID of the todo from the URL parameter
-$currentTodo = $todo->find($id); // Get the current todo
+$currentTodo = Todo::find($conn, $id); // Get the current todo
 //var_dump($currentTodo);
 if (!$currentTodo) {
     // If todo not found, redirect to index page
@@ -13,7 +11,7 @@ if (!$currentTodo) {
     exit();
 }
 
-if ($currentTodo->is_completed) {
+if ($currentTodo->getIsCompleted()) {
     // if todo is completed redirect to index page or display a message
     header("Location: index.php");
     exit();
@@ -23,23 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If form is submitted, update the todo
 
     $name = $_POST['name'];
+    $id = $_POST['id'];
+
+    $currentTodo->setName($name);
     
-    // Retrieve the todo object by its ID
-    $todo = new Todo($conn);
-    if ($todo->findById($id)) {
-        // Update the properties of the todo object
-        $todo->setName($name);
-        // Assuming other properties like is_completed and completed_at can also be updated if needed
-        
-        // Call the update method on the todo object
-        if ($todo->update()) {
-            header("Location: index.php");
-            exit();
-        } else {
-            echo "Error updating todo";
-        }
+    // Call the update method on the todo object
+    if ($currentTodo->update()) {
+        header("Location: index.php");
+        exit();
     } else {
-        echo "Todo not found";
+        echo "Error updating todo";
     }
 }
 

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = $_GET['id'];
    
     // Retrieve the todo object by its ID
-    $todo = new Todo($conn);
+    $todo = new Todo($conn, $id);
    
     if ($todo->findById($id)) {
        
