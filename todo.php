@@ -104,15 +104,23 @@ class Todo {
         }
 
         public function create() {
-           
+            // Escape the name to prevent SQL injection
             $name = $this->conn->real_escape_string($this->name);
-            $sql = "INSERT INTO todos (name) VALUES (?)";
+            
+            // Prepare the SQL statement
+            $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at) VALUES (?, ?, ?, ?)";
             $statement = $this->conn->prepare($sql);
-            $statement->bind_param("s", $name);
+        
+            // Bind parameters to the prepared statement
+            $statement->bind_param("siss", $name, $this->is_completed, $this->created_at, $this->updated_at);
+            
+            // Execute the statement
             if ($statement->execute()) {
-                    $this->id = $this->conn->insert_id;
-                    return true;
+                // If execution is successful, set the ID property
+                $this->id = $this->conn->insert_id;
+                return true;
             } else {
+                // If execution fails, return false
                 return false;
             }
         }
