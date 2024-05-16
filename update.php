@@ -2,30 +2,23 @@
 include 'Db.php'; // Include the database connection script
 include 'todo.php'; // Include the Todo class
 
-$id = $_GET['id']; // Get the ID of the todo from the URL parameter
-$currentTodo = Todo::find($conn, $id); // Get the current todo
-//var_dump($currentTodo);
+$id = $_GET['id'];
+
+$currentTodo = Todo::find($conn, $id); // Retrieve the current todo by its ID
+
 if (!$currentTodo) {
-    // If todo not found, redirect to index page
     header("Location: index.php");
     exit();
 }
 
-if ($currentTodo->getIsCompleted()) {
-    // if todo is completed redirect to index page or display a message
-    header("Location: index.php");
-    exit();
-}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST["name"];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // If form is submitted, update the todo
-
-    $name = $_POST['name'];
-    $id = $_POST['id'];
-
+   
     $currentTodo->setName($name);
-    
-    // Call the update method on the todo object
+    // var_dump($name);
+    // exit();
+
     if ($currentTodo->update()) {
         header("Location: index.php");
         exit();
@@ -47,7 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value="<?php echo $currentTodo->name; ?>" required>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($currentTodo->getName(), ENT_QUOTES); ?>" required>
+              
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>

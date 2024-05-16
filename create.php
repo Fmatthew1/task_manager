@@ -3,14 +3,17 @@ include 'Db.php';
 include 'todo.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
+    
     $name = $_POST["name"]; 
     
+    
     // Create a new Todo object
-    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at);
+    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, $id);
+   
     
 
     if ($todo->create()) { // Assuming create() method handles database insertion
+        
         echo "Todo created successfully!";
     } else {
         echo "Error creating todo.";

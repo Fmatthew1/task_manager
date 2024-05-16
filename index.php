@@ -34,7 +34,7 @@ $todos = Todo::findAll($conn); // Get all todos
                         <td><?php echo $todo->getCompletedAt(); ?></td>
                         <td>
                         <?php if (!$todo->getIsCompleted()) { ?>
-                                <a href="update.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-info">Update</a>
+                                <a href="update.php?update=1&id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-info">Update</a>
                                 <a href="complete.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-success">Complete</a>
                             <?php } ?>
                         </td>

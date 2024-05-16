@@ -9,12 +9,15 @@ class Todo {
     private $completed_at;
 
 
-    public function __construct($conn, $name, $is_completed, $created_at, $updated_at) {
+    public function __construct($conn, $name, $is_completed, $created_at, $updated_at, $id) {
         $this->conn = $conn;
         $this->name = $name;
         $this->is_completed = $is_completed;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
+        $this->id = $id;
+       
+    
     }
 
     public function setId($id) {
@@ -23,6 +26,7 @@ class Todo {
     }
 
     public function getId() {
+      
         return $this->id;
     }
 
@@ -68,7 +72,7 @@ class Todo {
 
     public function save() {
         if ($this->id === null) {
-            return $this->create($this->name);
+            return $this->create();
         } else {
             return $this->update();
         }
@@ -81,10 +85,10 @@ class Todo {
             $result = $statement->get_result();
             $todos = [];
             while ($row = $result->fetch_assoc()) {
-                $todo = new Todo($conn, $row['name'], $row['is_completed'], $row['created_at'], $row['updated_at']);
+                $todo = new Todo($conn, $row['name'], $row['is_completed'], $row['created_at'], $row['updated_at'], $row['id']);
                 $todos[] = $todo;
             }
-
+           
             return $todos;
         }
 
@@ -96,7 +100,7 @@ class Todo {
             $result = $statement->get_result();
             if ($result->num_rows == 1) {
                 $row = $result->fetch_assoc();
-                $todo = new Todo($conn, $row['name'], $row['is_completed'], $row['created_at'], $row['updated_at']);
+                $todo = new Todo($conn, $row['name'], $row['is_completed'], $row['created_at'], $row['updated_at'], $row['id']);
         
             } 
                 return $todo;
@@ -108,11 +112,11 @@ class Todo {
             $name = $this->conn->real_escape_string($this->name);
             
             // Prepare the SQL statement
-            $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at, id) VALUES (?, ?, ?, ?, ?)";
             $statement = $this->conn->prepare($sql);
         
             // Bind parameters to the prepared statement
-            $statement->bind_param("siss", $name, $this->is_completed, $this->created_at, $this->updated_at);
+            $statement->bind_param("siiss", $this->name, $this->is_completed, $this->created_at, $this->updated_at, $this->id);
             
             // Execute the statement
             if ($statement->execute()) {
@@ -126,17 +130,28 @@ class Todo {
         }
         
     public function update() {
-        $this->is_completed = 1;
-        $this->completed_at = time();
-        $this->updated_at = time();
-        $sql = "UPDATE todos SET name=?, is_completed=?, updated_at=?, completed_at=? WHERE id=?";
-        $statement = $this->conn->prepare($sql);
-        $statement->bind_param("sisi", $this->name, $this->is_completed, $this->completed_at, $this->id);
-        if ($statement->execute()) {
-            return true;
-        } else {
-            return false;
-        }
+
+            // $created_at = date("Y-m-d H:i:s");
+            // $updated_at = date("Y-m-d H:i:s");
+
+            // Prepare the SQL statement
+            $sql = "UPDATE todos SET name = ?, is_completed = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+            $statement = $this->conn->prepare($sql);
+        
+            // Bind parameters to the prepared statement
+            $statement->bind_param("sii", $this->name, $this->is_completed,  $this->id);
+            
+            // Execute the statement
+            if ($statement->execute()) {
+                // If execution is successful, set the ID property
+               $this->id = $this->conn->insert_id;
+                return true;
+            } else {
+                // If execution fails, return false
+                return false;
+            }
+        
+        
     }
 
     public function complete() {
