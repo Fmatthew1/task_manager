@@ -37,6 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container mt-5">
         <h1>Update Todo</h1>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="index.php"><button class="btn btn-primary" type="button">Back</button></a>
+        </div>
         <form action="" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
