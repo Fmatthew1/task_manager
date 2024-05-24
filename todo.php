@@ -143,23 +143,28 @@ class Todo {
                 return false;
             }
         }
-        
-        
+
         public function update() {
-   
-            // Check if the task is completed and set completed_at accordingly
             if ($this->is_completed) {
+                // SQL statement for completed task
                 $sql = "UPDATE todos SET is_completed = ?, completed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+                
+                // Prepare the SQL statement
+                $statement = $this->conn->prepare($sql);
+                
+                // Bind parameters to the prepared statement
+                $statement->bind_param("ii", $this->is_completed, $this->id);
             } else {
+                // SQL statement for not completed task
                 $sql = "UPDATE todos SET name = ?, is_completed = ?, completed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+                
+                // Prepare the SQL statement
+                $statement = $this->conn->prepare($sql);
+                
+                // Bind parameters to the prepared statement
+                $statement->bind_param("sii", $this->name, $this->is_completed, $this->id);
             }
-        
-            // Prepare the SQL statement
-            $statement = $this->conn->prepare($sql);
-        
-            // Bind parameters to the prepared statement
-            $statement->bind_param("sii", $this->name, $this->is_completed, $this->id);
-        
+            
             // Execute the statement
             if ($statement->execute()) {
                 return true;
@@ -167,10 +172,35 @@ class Todo {
                 return false;
             }
         }
+        
+        
+        
+        // public function update() {
+   
+        //     // Check if the task is completed and set completed_at accordingly
+        //     if ($this->is_completed) {
+        //         $sql = "UPDATE todos SET is_completed = ?, completed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        //     } else {
+        //         $sql = "UPDATE todos SET name = ?, is_completed = ?, completed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        //     }
+        
+        //     // Prepare the SQL statement
+        //     $statement = $this->conn->prepare($sql);
+        
+        //     // Bind parameters to the prepared statement
+        //     $statement->bind_param("iss", $this->is_completed, $this->completed_at, $this->updated_at);
+        
+        //     // Execute the statement
+        //     if ($statement->execute()) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        // }
 
     public function complete() {
         $this->is_completed = true;
-        $this->completed_at = date("Y-m-d H:i:s");
+        $this->completed_at = date('Y-m-d H:i:s');
         return $this->save();
     }
 

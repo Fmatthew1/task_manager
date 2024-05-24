@@ -6,7 +6,7 @@ include 'todo.php'; // Include the Todo class
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name']) ?? null;
     $id = $_POST['id'] ?? null;
-    // var_dump($name);
+    // var_dump($id);
     // exit();
        
     if (!empty($name)) {
