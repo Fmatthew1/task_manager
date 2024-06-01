@@ -63,8 +63,6 @@ class Todo {
     }
 
     public function setCompletedAt($completed_at) {
-        // var_dump($completed_at);
-        // exit();
         $this->completed_at = $completed_at;
     }
 
@@ -76,8 +74,6 @@ class Todo {
         if ($this->id === null) {
             return $this->create();
         }   else {
-            // var_dump($this->id);
-            // exit();
             return $this->update();
         }
     }
@@ -110,7 +106,6 @@ class Todo {
                 return $todo;
             
         }
-
         public function create() {
             // Escape the name to prevent SQL injection
             $name = $this->conn->real_escape_string($this->name);
@@ -118,7 +113,7 @@ class Todo {
             // Ensure the datetime values are properly formatted
             $created_at = date('Y-m-d H:i:s', strtotime($this->created_at));
             $updated_at = date('Y-m-d H:i:s', strtotime($this->updated_at));
-        
+                                                                                                                                                     
             // Prepare the SQL statement
             $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at) VALUES (?, ?, ?, ?)";
             $statement = $this->conn->prepare($sql);
@@ -172,31 +167,6 @@ class Todo {
                 return false;
             }
         }
-        
-        
-        
-        // public function update() {
-   
-        //     // Check if the task is completed and set completed_at accordingly
-        //     if ($this->is_completed) {
-        //         $sql = "UPDATE todos SET is_completed = ?, completed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-        //     } else {
-        //         $sql = "UPDATE todos SET name = ?, is_completed = ?, completed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-        //     }
-        
-        //     // Prepare the SQL statement
-        //     $statement = $this->conn->prepare($sql);
-        
-        //     // Bind parameters to the prepared statement
-        //     $statement->bind_param("iss", $this->is_completed, $this->completed_at, $this->updated_at);
-        
-        //     // Execute the statement
-        //     if ($statement->execute()) {
-        //         return true;
-        //     } else {
-        //         return false;
-        //     }
-        // }
 
     public function complete() {
         $this->is_completed = true;
@@ -204,26 +174,28 @@ class Todo {
         return $this->save();
     }
 
-    public function findById($id) {
+    public static function findById($conn, $id) {
         $sql = "SELECT id, name, is_completed, created_at, updated_at, completed_at FROM todos WHERE id=?";
-        $statement = $this->conn->prepare($sql);
+        $statement = $conn->prepare($sql);
         $statement->bind_param("i", $id);
         $statement->execute();
         $result = $statement->get_result();
         if ($result->num_rows == 1) {
             $row = $result->fetch_object();
-            $this->id = $row->id;
-            $this->name = $row->name;
-            $this->is_completed = $row->is_completed;
-            $this->created_at = $row->created_at;
-            $this->updated_at = $row->updated_at;
-            $this->completed_at = $row->completed_at;
-            return true;
+            $todo = new Todo(
+                $row->id,
+                $row->name,
+                $row->is_completed,
+                $row->created_at,
+                $row->updated_at,
+                $row->completed_at,
+                $conn
+            );
+            return $todo;
         } else {
-            return false;
+            return null;
         }
     }
+    
 
-}
-
-   
+}   

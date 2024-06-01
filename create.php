@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         <a href="index.php"><button class="btn btn-primary" type="button">Back</button></a>
         </div>
-        <form action="create_process.php" method="POST">
+        <form action="create.php" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
                 <input type="text" class="form-control" id="name" name="name" required>

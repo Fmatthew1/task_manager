@@ -13,11 +13,8 @@ if (!$currentTodo) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
-
    
     $currentTodo->setName($name);
-    // var_dump($name);
-    // exit();
 
     if ($currentTodo->update()) {
         header("Location: index.php");
