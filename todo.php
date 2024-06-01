@@ -106,8 +106,16 @@ class Todo {
                 return $todo;
             
         }
-        public function create() {
-            // Escape the name to prevent SQL injection
+
+         public function create() {
+
+             // Ensure $this->conn is a valid MySQLi connection object
+             if (!($this->conn instanceof mysqli)) {
+                error_log("Invalid MySQLi connection.");
+                return false;
+            }
+
+        //     // Escape the name to prevent SQL injection
             $name = $this->conn->real_escape_string($this->name);
         
             // Ensure the datetime values are properly formatted
@@ -141,35 +149,26 @@ class Todo {
 
         public function update() {
             if ($this->is_completed) {
-                // SQL statement for completed task
                 $sql = "UPDATE todos SET is_completed = ?, completed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-                
-                // Prepare the SQL statement
                 $statement = $this->conn->prepare($sql);
-                
-                // Bind parameters to the prepared statement
                 $statement->bind_param("ii", $this->is_completed, $this->id);
             } else {
-                // SQL statement for not completed task
                 $sql = "UPDATE todos SET name = ?, is_completed = ?, completed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-                
-                // Prepare the SQL statement
                 $statement = $this->conn->prepare($sql);
-                
-                // Bind parameters to the prepared statement
                 $statement->bind_param("sii", $this->name, $this->is_completed, $this->id);
             }
-            
-            // Execute the statement
+        
             if ($statement->execute()) {
                 return true;
             } else {
+                error_log("SQL Error: " . $statement->error);
                 return false;
             }
         }
+        
 
     public function complete() {
-        $this->is_completed = true;
+        $this->is_completed = 1;
         $this->completed_at = date('Y-m-d H:i:s');
         return $this->save();
     }
@@ -181,21 +180,21 @@ class Todo {
         $statement->execute();
         $result = $statement->get_result();
         if ($result->num_rows == 1) {
-            $row = $result->fetch_object();
+            $row = $result->fetch_assoc();
             $todo = new Todo(
-                $row->id,
-                $row->name,
-                $row->is_completed,
-                $row->created_at,
-                $row->updated_at,
-                $row->completed_at,
-                $conn
+                $conn,
+                $row['name'],
+                $row['is_completed'],
+                $row['created_at'],
+                $row['updated_at'],
+                $row['id'],
+                $row['completed_at']
             );
             return $todo;
         } else {
             return null;
         }
-    }
+    }    
     
 
 }   
