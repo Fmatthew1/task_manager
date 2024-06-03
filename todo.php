@@ -168,9 +168,7 @@ class Todo {
         
 
     public function complete() {
-        $this->is_completed = 1;
-        $this->completed_at = date('Y-m-d H:i:s');
-        return $this->save();
+      return $this->save();
     }
 
     public static function findById($conn, $id) {
