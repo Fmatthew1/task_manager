@@ -1,6 +1,7 @@
 <?php
 include 'Db.php'; // Include the database connection script
 include 'todo.php'; // Include the Todo class
+include 'users.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = intval($_GET['id']);
