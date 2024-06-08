@@ -1,40 +1,41 @@
 <?php
-include 'Db.php'; // Include the database connection script
-include 'todo.php'; // Include the Todo class
+include 'Db.php';
+include 'todo.php';
 
-$todos = Todo::findAll($conn); // Get all todos
+$todos = Todo::findAll($conn);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Task Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Todo List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
         <h1>Todo List</h1>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="create.php"><button class="btn btn-primary" type="button">Create</button></a>
-        </div>
+        <a href="create.php" class="btn btn-primary mb-3">Create Todo</a>
         <table class="table">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Status</th>
+                    <th>Assigned User</th>
                     <th>Date Created</th>
                     <th>Date Completed</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($todos as $todo) { ?>
                     <tr>
-                        <td><?php echo $todo->getName(); ?></td>
-                        <td><?php echo $todo->getIsCompleted() ? 'Completed' : 'Pending'; ?></td>
-                        <td><?php echo $todo->getCreatedAt(); ?></td>
-                        <td><?php echo $todo->getCompletedAt(); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getName()); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getIsCompleted() ? 'Completed' : 'Pending'); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getUserId() ? 'Assigned' : 'Unassigned'); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getCreatedAt()); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getCompletedAt() ? date('Y-m-d H:i:s', strtotime($todo->getCompletedAt())) : 'N/A'); ?></td>
                         <td>
-                        <?php if (!$todo->getIsCompleted()) { ?>
-                                <a href="update.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-info">Update</a>
+                            <a href="update.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-info">Update</a>
+                            <?php if (!$todo->getIsCompleted()) { ?>
                                 <a href="complete.php?id=<?php echo $todo->getId(); ?>" class="btn btn-sm btn-success">Complete</a>
                             <?php } ?>
                         </td>
