@@ -1,6 +1,5 @@
 <?php
 include 'Db.php';
-include 'todo.php';
 include 'users.php';
 
 $users = User::findAll($conn);
@@ -12,6 +11,7 @@ $users = User::findAll($conn);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<?php include 'navbar.php'; ?>
     <div class="container mt-5">
         <h1>Users</h1>
         <a href="create_user.php" class="btn btn-primary mb-3">Create User</a>
