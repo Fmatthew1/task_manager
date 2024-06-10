@@ -7,15 +7,19 @@ $id = $_GET['id'];
 
 $currentTodo = Todo::find($conn, $id); // Retrieve the current todo by its ID
 
+
 if (!$currentTodo) {
     header("Location: index.php");
     exit();
 }
+    $users = User::findAll($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
+    $user_id = intval($_POST["user_id"]);
    
     $currentTodo->setName($name);
+    $currentTodo->setUserId($user_id);
 
     if ($currentTodo->update()) {
         header("Location: index.php");
@@ -42,7 +46,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="name">Todo Name:</label>
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($currentTodo->getName(), ENT_QUOTES); ?>" required>
-              
+            </div>
+            <div class="form-group mb-3">
+                <label for="user_id">Assign to User:</label>
+                <select class="form-control" id="user_id" name="user_id" required>
+                    <?php foreach ($users as $user) { ?>
+                        <option value="<?php echo $user->getId(); ?>" <?php echo $user->getId() == $currentTodo->getUserId() ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($user->getName()); ?>
+                        </option>
+                    <?php } ?>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
