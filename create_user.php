@@ -1,6 +1,5 @@
 <?php
 include 'Db.php';
-include 'todo.php';
 include 'users.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
