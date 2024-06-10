@@ -146,10 +146,10 @@ class Todo {
     }
 
     public function update() {
-        $sql = "UPDATE todos SET name = ?, updated_at = ? WHERE id = ?";
+        $sql = "UPDATE todos SET name = ?, user_id = ?, updated_at = ? WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
         $updated_at = date('Y-m-d H:i:s');
-        $stmt->bind_param("ssi", $this->name, $updated_at, $this->id);
+        $stmt->bind_param("sisi", $this->name, $this->user_id, $updated_at, $this->id);
         return $stmt->execute();
     }
 
