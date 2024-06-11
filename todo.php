@@ -9,8 +9,9 @@ class Todo {
     private $id;
     private $completed_at;
     private $user_id;
+    private $user;
 
-    public function __construct($conn, $name, $is_completed, $created_at, $updated_at, $id = null, $completed_at = null, $user_id = null) {
+    public function __construct($conn, $name, $is_completed, $created_at, $updated_at, $id = null, $completed_at = null, $user_id = null, $user = null) {
         $this->conn = $conn;
         $this->name = $name;
         $this->is_completed = $is_completed;
@@ -19,6 +20,7 @@ class Todo {
         $this->id = $id;
         $this->completed_at = $completed_at;
         $this->user_id = $user_id;
+        $this->user = $user;
     }
 
     public static function findAll($conn) {
@@ -27,6 +29,7 @@ class Todo {
 
         $todos = [];
         while ($row = $result->fetch_assoc()) {
+            $user = User::find($conn, $row['user_id']); // Retrieve the User object
             $todos[] = new self(
                 $conn,
                 $row['name'],
@@ -35,7 +38,8 @@ class Todo {
                 $row['updated_at'],
                 $row['id'],
                 $row['completed_at'],
-                $row['user_id']
+                $row['user_id'],
+                $user
             );
         }
         return $todos;
@@ -50,6 +54,7 @@ class Todo {
         $row = $result->fetch_assoc();
         
         if ($row) {
+            $user = User::find($conn, $row['user_id']); // Retrieve the User object
             return new self(
                 $conn,
                 $row['name'],
@@ -58,7 +63,8 @@ class Todo {
                 $row['updated_at'],
                 $row['id'],
                 $row['completed_at'],
-                $row['user_id']
+                $row['user_id'],
+                $user
             );
         } else {
             return null;
@@ -74,6 +80,7 @@ class Todo {
         $row = $result->fetch_assoc();
         
         if ($row) {
+            $user = User::find($conn, $row['user_id']); // Retrieve the User object
             return new self(
                 $conn,
                 $row['name'],
@@ -82,11 +89,20 @@ class Todo {
                 $row['updated_at'],
                 $row['id'],
                 $row['completed_at'],
-                $row['user_id']
+                $row['user_id'],
+                $user
             );
         } else {
             return null;
         }
+    }
+
+    public function setUser($user){
+        $this->user = $user;
+    }
+
+    public function getUser(){
+        return $this->user;
     }
 
     public function setId($id) {
@@ -146,10 +162,10 @@ class Todo {
     }
 
     public function update() {
-        $sql = "UPDATE todos SET name = ?, user_id = ?, updated_at = ? WHERE id = ?";
+        $sql = "UPDATE todos SET name = ?, is_completed = ? user_id = ?, updated_at = ? WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
-        $updated_at = date('Y-m-d H:i:s');
-        $stmt->bind_param("sisi", $this->name, $this->user_id, $updated_at, $this->id);
+        //$updated_at = date('Y-m-d H:i:s');
+        $stmt->bind_param("siiii", $this->name, $this->is_completed, $this->user_id, $this->updated_at, $this->id);
         return $stmt->execute();
     }
 
