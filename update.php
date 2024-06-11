@@ -12,14 +12,22 @@ if (!$currentTodo) {
     header("Location: index.php");
     exit();
 }
-    $users = User::findAll($conn);
+    $activeUsers = User::findActive($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
-    $user_id = intval($_POST["user_id"]);
+    $is_completed = isset($_POST['is_completed']) ? 1 : 0;
+    $user_id = $_POST['user_id'];
+    //$user_id = intval($_POST["user_id"]);
+
+    $todo->setName($name);
+    $todo->setIsCompleted($is_completed);
+    $todo->setUserId($user_id);
+    $todo->setUpdatedAt(date('Y-m-d H:i:s'));
    
-    $currentTodo->setName($name);
-    $currentTodo->setUserId($user_id);
+    // $currentTodo->setName($name);
+    // $currentTodo->setUserId($user_id);
+    // $currentTodo->setUser($user);
 
     if ($currentTodo->update()) {
         header("Location: index.php");
