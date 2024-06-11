@@ -1,14 +1,12 @@
 <?php
 include 'Db.php';
-include 'todo.php';
 include 'users.php';
 
 $id = $_GET['id'];
 $user = User::find($conn, $id);
 
 if ($user) {
-    $user->setStatus('active');
-    if ($user->save()) {
+    if ($user->activate()) {
         header("Location: home.php");
         exit();
     } else {
