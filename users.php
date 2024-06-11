@@ -13,6 +13,7 @@ class User {
         $this->email = $email;
         $this->status = $status;
         $this->id = $id;
+
     }
 
     public function setId($id) {
@@ -84,6 +85,21 @@ class User {
         }
     }
 
+    public static function findActive($conn) {
+        $sql = "SELECT * FROM users WHERE status = 'active' ";
+        $result = $conn->query($sql);
+        $users = [];
+        while($row = $result->fetch_assoc()){
+            $users[] = new self(
+                $row['id'],
+                $row['name'],
+                $row['email'],
+                $row['status']
+            );
+        }
+        return $users;
+    }
+
     public static function emailExists($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = ?";
         $statement = $conn->prepare($sql);
@@ -138,6 +154,16 @@ class User {
             error_log("Statement execution failed: " . $statement->error);
             return false;
         }
+    }
+
+    public function activate() {
+        $this->setStatus('active');
+        return $this->save();
+    }
+
+    public function deactivate() {
+        $this->setStatus('deactivated');
+        return $this->save();
     }
 }
 
