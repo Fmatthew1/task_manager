@@ -29,12 +29,12 @@ $todos = Todo::findAll($conn);
             </thead>
             <tbody>
                 <?php foreach ($todos as $todo) {
-                    $user = User::find($conn, $todo->getUserId());
+                
                 ?>
                     <tr>
                         <td><?php echo htmlspecialchars($todo->getName()); ?></td>
                         <td><?php echo $todo->getIsCompleted() ? 'Completed' : 'Pending'; ?></td>
-                        <td><?php echo htmlspecialchars($user ? $user->getName() : 'Unassigned'); ?></td>
+                        <td><?php echo htmlspecialchars($todo->getUser() ? $todo->getUser()->getName() : 'Unassigned'); ?></td>
                         <td><?php echo htmlspecialchars($todo->getCreatedAt()); ?></td>
                         <td><?php echo htmlspecialchars($todo->getCompletedAt() ? date('Y-m-d H:i:s', strtotime($todo->getCompletedAt())) : 'N/A'); ?></td>
                         <td>
