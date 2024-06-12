@@ -161,15 +161,24 @@ class Todo {
         return $this->completed_at;
     }
 
-    public function update() {
-        $sql = "UPDATE todos SET name = ?, is_completed = ? user_id = ?, updated_at = ? WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        //$updated_at = date('Y-m-d H:i:s');
-        $stmt->bind_param("siiii", $this->name, $this->is_completed, $this->user_id, $this->updated_at, $this->id);
-        return $stmt->execute();
+   // Update todo
+   public function update() {
+    if (!$this->userExists()) {
+        error_log("User ID {$this->user_id} does not exist in the users table.");
+        return false;
     }
 
+    $sql = "UPDATE todos SET name = ?, is_completed = ?, user_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("siii", $this->name, $this->is_completed, $this->user_id, $this->id);
+    return $stmt->execute();
+}
     public function complete() {
+        if (!$this->userExists()) {
+            error_log("User ID {$this->user_id} does not exist in the users table.");
+            return false;
+        }
+
         $completed_at = date('Y-m-d H:i:s');
         $sql = "UPDATE todos SET is_completed = ?, completed_at = ? WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
@@ -178,6 +187,11 @@ class Todo {
     }
 
     public function create() {
+        if (!$this->userExists()) {
+            error_log("User ID {$this->user_id} does not exist in the users table.");
+            return false;
+        }
+
         $name = $this->conn->real_escape_string($this->name);
         $created_at = date('Y-m-d H:i:s', strtotime($this->created_at));
         $updated_at = date('Y-m-d H:i:s', strtotime($this->updated_at));
@@ -198,5 +212,15 @@ class Todo {
             error_log("Statement execution failed: " . $statement->error);
             return false;
         }
+    }
+
+    // User existence check
+    private function userExists() {
+        $sql = "SELECT id FROM users WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $this->user_id);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
     }
 }
