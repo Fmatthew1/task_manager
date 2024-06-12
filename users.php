@@ -85,7 +85,7 @@ class User {
         }
     }
 
-    public static function findActive($conn) {
+    public static function findAllActive($conn) {
         $sql = "SELECT * FROM users WHERE status = 'active' ";
         $result = $conn->query($sql);
         $users = [];
