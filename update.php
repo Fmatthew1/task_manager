@@ -5,30 +5,25 @@ include 'users.php';
 
 $id = $_GET['id'];
 
-$currentTodo = Todo::find($conn, $id); // Retrieve the current todo by its ID
-
+$currentTodo = Todo::find($conn, $id);
 
 if (!$currentTodo) {
     header("Location: index.php");
     exit();
 }
-    $activeUsers = User::findActive($conn);
+
+$activeUsers = User::findAllActive($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
     $is_completed = isset($_POST['is_completed']) ? 1 : 0;
-    $user_id = $_POST['user_id'];
-    //$user_id = intval($_POST["user_id"]);
-
-    $todo->setName($name);
-    $todo->setIsCompleted($is_completed);
-    $todo->setUserId($user_id);
-    $todo->setUpdatedAt(date('Y-m-d H:i:s'));
+    $user_id = intval($_POST["user_id"]);
+    
+    $currentTodo->setName($name);
+    $currentTodo->setIsCompleted($is_completed);
+    $currentTodo->setUserId($user_id);
+    $currentTodo->setUpdatedAt(date('Y-m-d H:i:s'));
    
-    // $currentTodo->setName($name);
-    // $currentTodo->setUserId($user_id);
-    // $currentTodo->setUser($user);
-
     if ($currentTodo->update()) {
         header("Location: index.php");
         exit();
@@ -58,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group mb-3">
                 <label for="user_id">Assign to User:</label>
                 <select class="form-control" id="user_id" name="user_id" required>
-                    <?php foreach ($users as $user) { ?>
+                    <?php foreach ($activeUsers as $user) { ?>
                         <option value="<?php echo $user->getId(); ?>" <?php echo $user->getId() == $currentTodo->getUserId() ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($user->getName()); ?>
                         </option>
