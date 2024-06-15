@@ -1,10 +1,10 @@
 <?php
-include 'Db.php';
-include 'todo.php';
-include 'users.php';
+include 'Db.php';   // Assuming Db.php contains database connection logic
+include 'todo.php'; // Assuming todo.php contains Todo class definition
+include 'users.php'; // Assuming users.php contains User class definition
 
 // Retrieve all users
-$users = User::findAll($conn);
+$users = User::findAll($conn); // Assuming $conn is your database connection object
 
 // Filter active users
 $activeUsers = array_filter($users, function($user) {
@@ -15,19 +15,21 @@ $activeUsers = array_filter($users, function($user) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $user_id = intval($_POST["user_id"]);
-    $is_completed = 0;
+    $is_completed = 0; // Assuming this is the default value for new todos
     $created_at = date("Y-m-d H:i:s");
     $updated_at = $created_at;
+    $completed_at = null; // Assuming this is initially null for new todos
 
     // Create a new Todo object
-    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, $id, $completed_at, $user_id);
+    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, null, $completed_at, $user_id); // Passing null for $id as it's usually auto-incremented
 
     // Save the new todo
-    if ($todo->create()) {
+    $result = $todo->create();
+    if ($result === true) {
         header("Location: index.php");
         exit();
     } else {
-        echo "Error creating todo.";
+        echo "Error creating todo: " . $result; // Output the specific error message
     }
 }
 ?>
