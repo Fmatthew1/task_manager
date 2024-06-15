@@ -5,7 +5,7 @@ include 'users.php';
 
 $id = $_GET['id'];
 
-$currentTodo = Todo::find($conn, $id);
+$currentTodo = Todo::findById($conn, $_GET['id']);
 
 if (!$currentTodo) {
     header("Location: index.php");
@@ -15,10 +15,10 @@ if (!$currentTodo) {
 $activeUsers = User::findAllActive($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $user_id = $_POST["user_id"];
     $name = $_POST["name"];
     $is_completed = isset($_POST['is_completed']) ? 1 : 0;
-    $user_id = intval($_POST["user_id"]);
-    
     $currentTodo->setName($name);
     $currentTodo->setIsCompleted($is_completed);
     $currentTodo->setUserId($user_id);
@@ -53,11 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group mb-3">
                 <label for="user_id">Assign to User:</label>
                 <select class="form-control" id="user_id" name="user_id" required>
-                    <?php foreach ($activeUsers as $user) { ?>
+                    <?php foreach ($activeUsers as $user):  ?>
                         <option value="<?php echo $user->getId(); ?>" <?php echo $user->getId() == $currentTodo->getUserId() ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($user->getName()); ?>
                         </option>
-                    <?php } ?>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
