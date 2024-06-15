@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($id > 0) {
         $completed_at = date("Y-m-d H:i:s");
         $todo = Todo::findById($conn, $id);
-
+    
         if ($todo) {
             $todo->setIsCompleted(1);
             $todo->setCompletedAt($completed_at);
