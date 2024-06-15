@@ -91,10 +91,11 @@ class User {
         $users = [];
         while($row = $result->fetch_assoc()){
             $users[] = new self(
-                $row['id'],
+                $conn,
                 $row['name'],
                 $row['email'],
-                $row['status']
+                $row['status'],
+                $row['id']
             );
         }
         return $users;
@@ -162,7 +163,7 @@ class User {
     }
 
     public function deactivate() {
-        $this->setStatus('deactivated');
+        $this->setStatus('inactive');
         return $this->save();
     }
 }
