@@ -169,18 +169,18 @@ class Todo {
     return $stmt->execute();
 }
 
-    public function complete() {
-        if (!$this->userExists()) {
-            error_log("User ID {$this->user_id} does not exist in the users table.");
-            return false;
-        }
-
-        $completed_at = date('Y-m-d H:i:s');
-        $sql = "UPDATE todos SET is_completed = ?, completed_at = ? WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isi", $this->is_completed, $completed_at, $this->id);
-        return $stmt->execute();
+public function complete() {
+    
+    $sql = "UPDATE todos SET is_completed = ?, completed_at = ? WHERE id = ?";
+    $stmt = $this->conn->prepare($sql);
+    if ($stmt === false) {
+        error_log("Failed to prepare statement: " . $this->conn->error);
+        return false;
     }
+
+    $stmt->bind_param("isi", $this->is_completed, $this->completed_at, $this->id);
+    return $stmt->execute();
+}
 
     public function create() {
         try {
@@ -196,35 +196,6 @@ class Todo {
             return "Exception: " . $e->getMessage();
         }
     }
-
-    // public function create() {
-    //     if (!$this->userExists()) {
-    //         error_log("User ID {$this->user_id} does not exist in the users table.");
-    //         return false;
-    //     }
-    
-    //     $name = $this->conn->real_escape_string($this->name);
-    //     $created_at = date('Y-m-d H:i:s', strtotime($this->created_at));
-    //     $updated_at = date('Y-m-d H:i:s', strtotime($this->updated_at));
-        
-    //     $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at, user_id) VALUES (?, ?, ?, ?, ?)";
-    //     $statement = $this->conn->prepare($sql);
-    
-    //     if ($statement === false) {
-    //         error_log("Statement preparation failed: " . $this->conn->error);
-    //         return false;
-    //     }
-    
-    //     $statement->bind_param("sissi", $name, $this->is_completed, $created_at, $updated_at, $this->user_id);
-    
-    //     if ($statement->execute()) {
-    //         $this->id = $this->conn->insert_id;
-    //         return true;
-    //     } else {
-    //         error_log("Statement execution failed: " . $statement->error);
-    //         return false;
-    //     }
-    // }
     
 
     // User existence check
