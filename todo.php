@@ -163,16 +163,12 @@ class Todo {
 
    // Update todo
    public function update() {
-    if (!$this->userExists()) {
-        error_log("User ID {$this->user_id} does not exist in the users table.");
-        return false;
-    }
-
     $sql = "UPDATE todos SET name = ?, is_completed = ?, user_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
     $stmt = $this->conn->prepare($sql);
     $stmt->bind_param("siii", $this->name, $this->is_completed, $this->user_id, $this->id);
     return $stmt->execute();
 }
+
     public function complete() {
         if (!$this->userExists()) {
             error_log("User ID {$this->user_id} does not exist in the users table.");
@@ -187,40 +183,58 @@ class Todo {
     }
 
     public function create() {
-        if (!$this->userExists()) {
-            error_log("User ID {$this->user_id} does not exist in the users table.");
-            return false;
-        }
-
-        $name = $this->conn->real_escape_string($this->name);
-        $created_at = date('Y-m-d H:i:s', strtotime($this->created_at));
-        $updated_at = date('Y-m-d H:i:s', strtotime($this->updated_at));
-        $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at, user_id) VALUES (?, ?, ?, ?, ?)";
-        $statement = $this->conn->prepare($sql);
-
-        if ($statement === false) {
-            error_log("Statement preparation failed: " . $this->conn->error);
-            return false;
-        }
-
-        $statement->bind_param("sissi", $name, $this->is_completed, $created_at, $updated_at, $this->user_id);
-
-        if ($statement->execute()) {
-            $this->id = $this->conn->insert_id;
-            return true;
-        } else {
-            error_log("Statement execution failed: " . $statement->error);
-            return false;
+        try {
+            $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at,  completed_at, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("sisssi", $this->name, $this->is_completed, $this->created_at, $this->updated_at, $this->completed_at, $this->user_id);
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                return "Error executing statement: " . $stmt->error;
+            }
+        } catch (Exception $e) {
+            return "Exception: " . $e->getMessage();
         }
     }
+
+    // public function create() {
+    //     if (!$this->userExists()) {
+    //         error_log("User ID {$this->user_id} does not exist in the users table.");
+    //         return false;
+    //     }
+    
+    //     $name = $this->conn->real_escape_string($this->name);
+    //     $created_at = date('Y-m-d H:i:s', strtotime($this->created_at));
+    //     $updated_at = date('Y-m-d H:i:s', strtotime($this->updated_at));
+        
+    //     $sql = "INSERT INTO todos (name, is_completed, created_at, updated_at, user_id) VALUES (?, ?, ?, ?, ?)";
+    //     $statement = $this->conn->prepare($sql);
+    
+    //     if ($statement === false) {
+    //         error_log("Statement preparation failed: " . $this->conn->error);
+    //         return false;
+    //     }
+    
+    //     $statement->bind_param("sissi", $name, $this->is_completed, $created_at, $updated_at, $this->user_id);
+    
+    //     if ($statement->execute()) {
+    //         $this->id = $this->conn->insert_id;
+    //         return true;
+    //     } else {
+    //         error_log("Statement execution failed: " . $statement->error);
+    //         return false;
+    //     }
+    // }
+    
 
     // User existence check
     private function userExists() {
         $sql = "SELECT id FROM users WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $this->user_id);
+        $stmt->bind_param("i", $this->id);
         $stmt->execute();
-        $stmt->store_result();
+        $result = $stmt->store_result();
+        var_dump($result);
         return $stmt->num_rows > 0;
     }
 }
