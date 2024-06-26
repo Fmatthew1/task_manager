@@ -2,6 +2,9 @@
 include 'Db.php';
 include 'users.php';
 
+$name = $email = "";
+$errorMessage = "";
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
@@ -9,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if the email already exists
     if (User::emailExists($conn, $email)) {
-        echo "Error: Email already exists.";
+        $errorMessage = "Error: Email already exists.";
     } else {
         // Create a new user without passing the $id
         $user = new User($conn, $name, $email, $status);
@@ -18,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: home.php");
             exit();
         } else {
-            echo "Error creating user.";
+            $errorMessage = "Error creating user.";
         }
     }
 }
@@ -36,11 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="create_user.php" method="POST">
             <div class="form-group mb-3">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name" value ="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>" required>
             </div>
             <div class="form-group mb-3">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" value ="<?php echo htmlspecialchars($email, ENT_QUOTES); ?>"required>
+                <?php if(!empty($errorMessage)): ?>
+                    <div class = "text-danger mt-2"><?php echo $errorMessage; ?></div>
+                    <?php endif; ?>
             </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
