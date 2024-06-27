@@ -17,10 +17,6 @@ if (!$user) {
 $name = $email = "";
 $errorMessages = ["name" => "", "email" => ""];
 
-// if (!$currentUser) {
-//     header("Location: home.php");
-//     exit();
-// }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
@@ -43,8 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user->setName($name);
         $user->setEmail($email);
 
-    // $currentUser->setName($name);
-    // $currentUser->setEmail($email);
 
     if ($user->save()) {
         header("Location: home.php");
