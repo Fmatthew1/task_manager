@@ -1,5 +1,4 @@
 <?php
-
 class User {
     private $conn;
     private $id;
@@ -55,7 +54,6 @@ class User {
             return $this->update();
         }
     }
-
     public static function findAll($conn) {
         $sql = "SELECT * FROM users ORDER BY created_at DESC";
         $statement = $conn->prepare($sql);
@@ -69,7 +67,6 @@ class User {
         }
         return $users;
     }
-
     public static function find($conn, $id) {
         $sql = "SELECT * FROM users WHERE id = ?";
         $statement = $conn->prepare($sql);
@@ -100,7 +97,6 @@ class User {
         }
         return $users;
     }
-
     public static function emailExists($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = ?";
         $statement = $conn->prepare($sql);
@@ -109,7 +105,6 @@ class User {
         $result = $statement->get_result();
         return $result->num_rows > 0;
     }
-
     private function create() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);
@@ -133,7 +128,6 @@ class User {
             return false;
         }
     }
-
     private function update() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);
@@ -157,13 +151,9 @@ class User {
         }
     }
 
-    public function activate() {
-        $this->setStatus('active');
-        return $this->save();
-    }
-
-    public function deactivate() {
-        $this->setStatus('inactive');
+    // Toggle user status
+    public function toggleStatus() {
+        $this->status = ($this->status === 'active') ? 'inactive' : 'active';
         return $this->save();
     }
 }
