@@ -32,11 +32,10 @@ $users = User::findAll($conn);
                         <td><?php echo htmlspecialchars($user->getStatus()); ?></td>
                         <td>
                             <a href="update_user.php?id=<?php echo $user->getId(); ?>" class="btn btn-sm btn-info">Update</a>
-                            <?php if ($user->getStatus() == 'active') { ?>
-                                <a href="deactivate_user.php?id=<?php echo $user->getId(); ?>" class="btn btn-sm btn-warning">Deactivate</a>
-                            <?php } else { ?>
-                                <a href="activate_user.php?id=<?php echo $user->getId(); ?>" class="btn btn-sm btn-success">Activate</a>
-                            <?php } ?>
+                            <a href="toggle_status.php?id=<?php echo $user->getId(); ?>" class="btn btn-warning">
+                            <?php echo ($user->getStatus() === 'active') ? 'Deactivate' : 'Activate'; ?>
+                            </a>
+
                         </td>
                     </tr>
                 <?php } ?>
