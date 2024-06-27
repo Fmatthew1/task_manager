@@ -197,7 +197,6 @@ public function complete() {
         }
     }
     
-
     // User existence check
     private function userExists() {
         $sql = "SELECT id FROM users WHERE id = ?";
