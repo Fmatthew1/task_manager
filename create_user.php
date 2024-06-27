@@ -3,17 +3,32 @@ include 'Db.php';
 include 'users.php';
 
 $name = $email = "";
-$errorMessage = "";
+$errorMessages = ["name" => "", "email" => ""];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
     $status = 'active';
 
+    //server-side validation
+    if (empty($name)){
+        $errorMessages['name'] = "Name is required.";
+    }
+
+    if (empty($email)) {
+        $errorMessages['email'] = "Email is required.";
+    } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errorMessages['email'] = "invalid email format.";
+    } elseif (User::emailExists($conn, $email)) {
+        $errorMessages['email'] = "Error: Email already exists.";
+    }
+
     // Check if the email already exists
-    if (User::emailExists($conn, $email)) {
-        $errorMessage = "Error: Email already exists.";
-    } else {
+    // if (User::emailExists($conn, $email)) {
+    //     $errorMessage = "Error: Email already exists.";
+    // } else {
+
+        if (empty($errorMessages['name']) && empty($errorMessages['email'])) {
         // Create a new user without passing the $id
         $user = new User($conn, $name, $email, $status);
 
@@ -21,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: home.php");
             exit();
         } else {
-            $errorMessage = "Error creating user.";
+            $errorMessages['general'] = "Error creating user.";
         }
     }
 }
@@ -39,15 +54,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="create_user.php" method="POST">
             <div class="form-group mb-3">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value ="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>" required>
+                <input type="text" class="form-control" id="name" name="name" value ="<?php echo htmlspecialchars($name, ENT_QUOTES); ?>">
+                <?php if (!empty($errorMessages['name'])): ?>
+                <div class = "text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="form-group mb-3">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" value ="<?php echo htmlspecialchars($email, ENT_QUOTES); ?>"required>
-                <?php if(!empty($errorMessage)): ?>
-                    <div class = "text-danger mt-2"><?php echo $errorMessage; ?></div>
+                <input type="email" class="form-control" id="email" name="email" value ="<?php echo htmlspecialchars($email, ENT_QUOTES); ?>">
+                <?php if(!empty($errorMessages['email'])): ?>
+                    <div class = "text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
                     <?php endif; ?>
             </div>
+            <?php if (!empty($errorMessages['general'])): ?>
+                <div class="text-danger mb-3"><?php echo $errorMessages['general']; ?></div>
+            <?php endif; ?>
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>

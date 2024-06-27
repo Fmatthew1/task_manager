@@ -14,6 +14,9 @@ if (!$currentTodo) {
 
 $activeUsers = User::findAllActive($conn);
 
+$name = "";
+$errorMessages = ["name" => ""];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $user_id = $_POST["user_id"];
@@ -23,12 +26,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $currentTodo->setIsCompleted($is_completed);
     $currentTodo->setUserId($user_id);
     $currentTodo->setUpdatedAt(date('Y-m-d H:i:s'));
+
+    //server-side validation
+    if (empty($name)) {
+        $errorMessages['name'] = "Name is required.";
+    }
+
+    if (empty($errorMessages['name'])) {
+    
    
     if ($currentTodo->update()) {
         header("Location: index.php");
         exit();
     } else {
-        echo "Error updating todo";
+        $errorMessages['general'] = "Error updating todo";
+    }
+    
     }
 }
 
@@ -48,7 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="" method="POST">
             <div class="form-group">
                 <label for="name">Todo Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($currentTodo->getName(), ENT_QUOTES); ?>" required>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($currentTodo->getName(), ENT_QUOTES); ?>">
+                <?php if (!empty($errorMessages['name'])): ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="form-group mb-3">
                 <label for="user_id">Assign to User:</label>
@@ -60,6 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endforeach; ?>
                 </select>
             </div>
+            <?php if (!empty($errorMessages['general'])): ?>
+                <div class="text-danger mb-3"><?php echo $errorMessages['general']; ?></div>
+            <?php endif; ?>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>

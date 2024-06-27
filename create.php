@@ -11,6 +11,9 @@ $activeUsers = array_filter($users, function($user) {
     return $user->getStatus() === 'active';
 });
 
+$name = "";
+$errorMessages = ["name" => ""];
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
@@ -20,6 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $updated_at = $created_at;
     $completed_at = null; // Assuming this is initially null for new todos
 
+    //server-side validation
+    if (empty($name)){
+        $errorMessages['name'] = "Name is required.";
+    }
+
+    if (empty($errorMessages['name'])) {
     // Create a new Todo object
     $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, null, $completed_at, $user_id); // Passing null for $id as it's usually auto-incremented
 
@@ -29,7 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: index.php");
         exit();
     } else {
-        echo "Error creating todo: " . $result; // Output the specific error message
+        $errorMessages['general'] = "Error creating todo: " . $result; // Output the specific error message
+    }
+
     }
 }
 ?>
@@ -46,7 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="create.php" method="POST">
             <div class="form-group mb-3">
                 <label for="name">Todo Name:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name">
+                <?php if (!empty($errorMessages['name'])): ?>
+                <div class = "text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="form-group mb-3">
                 <label for="user_id">Assign to User:</label>
@@ -56,6 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php } ?>
                 </select>
             </div>
+            <?php if (!empty($errorMessages['general'])): ?>
+                <div class="text-danger mb-3"><?php echo $errorMessages['general']; ?></div>
+            <?php endif; ?>
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
