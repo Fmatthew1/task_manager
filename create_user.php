@@ -23,11 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessages['email'] = "Error: Email already exists.";
     }
 
-    // Check if the email already exists
-    // if (User::emailExists($conn, $email)) {
-    //     $errorMessage = "Error: Email already exists.";
-    // } else {
-
         if (empty($errorMessages['name']) && empty($errorMessages['email'])) {
         // Create a new user without passing the $id
         $user = new User($conn, $name, $email, $status);
