@@ -118,7 +118,7 @@ class User {
                 $row['id']
             );
         }
-    
+            return null;
         
     }
     
