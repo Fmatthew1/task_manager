@@ -5,7 +5,7 @@ include 'users.php';
 $id = $_GET['id'] ?? null;
 
 if (!$id) {
-    die("Üser ID is required");
+    die("User ID is required");
 }
 
 $user = User::find($conn, $id);
@@ -13,6 +13,7 @@ $user = User::find($conn, $id);
 if (!$user) {
     die("User not found");
 }
+
 
 $name = $email = "";
 $errorMessages = ["name" => "", "email" => ""];
@@ -31,8 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessages['email'] = "Email is required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errorMessages['email'] = "invalid email format.";
-    } elseif (User::emailExists($conn, $email)) {
-        $errorMessages['email'] = "Error: Email already exists.";
+    } else {
+        $existingUser = User::findByEmail($conn, $email);
+        if ($existingUser && $existingUser->getId() !== $user->getId()) {
+            $errorMessages['email'] = "Error: Email already exists.";
+        }
+      
     }
 
     if (empty($errorMessages['name']) && empty($errorMessages['email'])) {

@@ -54,6 +54,9 @@ class User {
             return $this->update();
         }
     }
+
+   
+    
     public static function findAll($conn) {
         $sql = "SELECT * FROM users ORDER BY created_at DESC";
         $statement = $conn->prepare($sql);
@@ -97,6 +100,28 @@ class User {
         }
         return $users;
     }
+
+
+    public static function findByEmail($conn, $email) {
+        $sql = "SELECT * FROM users WHERE email=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $email); 
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        if ($row) {
+            return new self(
+                $conn,
+                $row['name'],
+                $row['email'],
+                $row['status'],
+                $row['id']
+            );
+        }
+    
+        
+    }
+    
     public static function emailExists($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = ?";
         $statement = $conn->prepare($sql);
