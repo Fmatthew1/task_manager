@@ -1,3 +1,22 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <ul class="list-unstyled ms-3">
+        <?php if (isset($_SESSION['user_id'])): ?>
+        <li class="nav-item">
+            <button class="btn btn-sm btn-outline-info me-2" type="button"><a class = "nav-link" href="logout.php">Logout</a></button>
+        </li>
+        <?php else: ?>
+            <li class="nav-item">
+            <button class="btn btn-sm btn-outline-info me-2" type="button"><a class="nav-link" href="login.php">Login</a></button>
+            </li>
+        <?php endif; ?>
+    </ul>
+</nav>
 <!-- navbar.php -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
