@@ -4,12 +4,14 @@ class User {
     private $id;
     private $name;
     private $email;
+    private $password;
     private $status;
 
-    public function __construct($conn, $name, $email, $status, $id = null) {
+    public function __construct($conn, $name, $email, $password, $status, $id = null) {
         $this->conn = $conn;
         $this->name = $name;
         $this->email = $email;
+        $this->password = $password;
         $this->status = $status;
         $this->id = $id;
 
@@ -39,6 +41,14 @@ class User {
         return $this->email;
     }
 
+    public function setPassword($password) {
+        $this->password = $password;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+
     public function setStatus($status) {
         $this->status = $status;
     }
@@ -65,7 +75,7 @@ class User {
 
         $users = [];
         while ($row = $result->fetch_assoc()) {
-            $user = new User($conn, $row['name'], $row['email'], $row['status'], $row['id']);
+            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['id']);
             $users[] = $user;
         }
         return $users;
@@ -78,7 +88,7 @@ class User {
         $result = $statement->get_result();
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
-            $user = new User($conn, $row['name'], $row['email'], $row['status'], $row['id']);
+            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['id']);
             return $user;
         } else {
             return null;
@@ -94,6 +104,7 @@ class User {
                 $conn,
                 $row['name'],
                 $row['email'],
+                $row['password'],
                 $row['status'],
                 $row['id']
             );
@@ -114,6 +125,7 @@ class User {
                 $conn,
                 $row['name'],
                 $row['email'],
+                $row['password'],
                 $row['status'],
                 $row['id']
             );
@@ -121,6 +133,7 @@ class User {
             return null;
         
     }
+
     
     public static function emailExists($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = ?";
@@ -135,7 +148,9 @@ class User {
         $email = $this->conn->real_escape_string($this->email);
         $status = $this->status;
 
-        $sql = "INSERT INTO users (name, email, status) VALUES (?, ?, ?)";
+        $password = $this->password;
+
+        $sql = "INSERT INTO users (name, email, password, status) VALUES (?, ?, ?, ?)";
         $statement = $this->conn->prepare($sql);
 
         if ($statement === false) {
@@ -143,7 +158,7 @@ class User {
             return false;
         }
 
-        $statement->bind_param("sss", $name, $email, $status);
+        $statement->bind_param("ssss", $name, $email, $password, $status);
 
         if ($statement->execute()) {
             $this->id = $this->conn->insert_id;
