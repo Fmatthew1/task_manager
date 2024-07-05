@@ -3,11 +3,12 @@ include 'Db.php';
 include 'users.php';
 
 $name = $email = "";
-$errorMessages = ["name" => "", "email" => ""];
+$errorMessages = ["name" => "", "email" => "", "password" => "", "general" => ""];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
+    $password = $_POST["password"];
     $status = 'active';
 
     //server-side validation
@@ -23,9 +24,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessages['email'] = "Error: Email already exists.";
     }
 
-        if (empty($errorMessages['name']) && empty($errorMessages['email'])) {
+    if (empty($password)) {
+        $errorMessages['password'] = "Password is required.";
+    }
+
+        if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password'])) {
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // var_dump($hashedPassword);
+            // exit();
         // Create a new user without passing the $id
-        $user = new User($conn, $name, $email, $status);
+        $user = new User($conn, $name, $email, $hashedPassword, $status);
 
         if ($user->save()) {
             header("Location: home.php");
@@ -35,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -59,6 +69,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="email" class="form-control" id="email" name="email" value ="<?php echo htmlspecialchars($email, ENT_QUOTES); ?>">
                 <?php if(!empty($errorMessages['email'])): ?>
                     <div class = "text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
+                    <?php endif; ?>
+            </div>
+            <div class="form-group mb-3">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" name="password">
+                <?php if(!empty($errorMessages['password'])): ?>
+                    <div class = "text-danger mt-2"><?php echo $errorMessages['password']; ?></div>
                     <?php endif; ?>
             </div>
             <?php if (!empty($errorMessages['general'])): ?>
