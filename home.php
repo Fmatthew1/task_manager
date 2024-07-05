@@ -1,8 +1,14 @@
 <?php
+session_start();
 include 'Db.php';
 include 'users.php';
 
 $users = User::findAll($conn);
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html>
