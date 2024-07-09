@@ -1,5 +1,0 @@
-<?php
-include 'Db.php';
-include 'users.php';
-include 'roles';
-
