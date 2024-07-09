@@ -6,13 +6,15 @@ class User {
     private $email;
     private $password;
     private $status;
+    private $role_id;
 
-    public function __construct($conn, $name, $email, $password, $status, $id = null) {
+    public function __construct($conn, $name, $email, $password, $status, $role_id, $id = null) {
         $this->conn = $conn;
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
         $this->status = $status;
+        $this->role_id = $role_id;
         $this->id = $id;
 
     }
@@ -57,6 +59,13 @@ class User {
         return $this->status;
     }
 
+    public function setRoleId($role_id){
+        $this->role_id = $role_id;
+    }
+    public function getRoleId(){
+        return $this->role_id;
+    }
+
     public function save() {
         if ($this->id === null) {
             return $this->create();
@@ -75,7 +84,7 @@ class User {
 
         $users = [];
         while ($row = $result->fetch_assoc()) {
-            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['id']);
+            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['role_id'], $row['id']);
             $users[] = $user;
         }
         return $users;
@@ -88,7 +97,7 @@ class User {
         $result = $statement->get_result();
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
-            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['id']);
+            $user = new User($conn, $row['name'], $row['email'], $row['password'], $row['status'], $row['role_id'], $row['id']);
             return $user;
         } else {
             return null;
@@ -106,6 +115,7 @@ class User {
                 $row['email'],
                 $row['password'],
                 $row['status'],
+                $row['role_id'],
                 $row['id']
             );
         }
@@ -127,6 +137,7 @@ class User {
                 $row['email'],
                 $row['password'],
                 $row['status'],
+                $row['role_id'],
                 $row['id']
             );
         }
@@ -181,7 +192,7 @@ class User {
             return false;
         }
 
-        $statement->bind_param("sssi", $name, $email, $status, $this->id);
+        $statement->bind_param("sssii", $name, $email, $status, $this->role_id, $this->id);
 
         if ($statement->execute()) {
             return true;
