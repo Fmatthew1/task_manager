@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // var_dump($hashedPassword);
             // exit();
         // Create a new user without passing the $id
-        $user = new User($conn, $name, $email, $hashedPassword, $status);
+        $user = new User($conn, $name, $email, $hashedPassword, $status, $role_id);
 
         if ($user->save()) {
             header("Location: home.php");
