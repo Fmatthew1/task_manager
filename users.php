@@ -154,14 +154,14 @@ class User {
         $result = $statement->get_result();
         return $result->num_rows > 0;
     }
-    private function create() {
+    public function create() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);
         $status = $this->status;
-
+        $role_id = $this->role_id;
         $password = $this->password;
 
-        $sql = "INSERT INTO users (name, email, password, status) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO users (name, email, role_id, password, status) VALUES (?, ?, ?, ?, ?)";
         $statement = $this->conn->prepare($sql);
 
         if ($statement === false) {
@@ -179,12 +179,14 @@ class User {
             return false;
         }
     }
-    private function update() {
+    public function update() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);
+        $password = $this->password;
         $status = $this->status;
+        $role_id = $this->role_id;
 
-        $sql = "UPDATE users SET name = ?, email = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        $sql = "UPDATE users SET name = ?, email = ?, password = ?, status = ?, role_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
         $statement = $this->conn->prepare($sql);
 
         if ($statement === false) {
@@ -192,7 +194,7 @@ class User {
             return false;
         }
 
-        $statement->bind_param("sssii", $name, $email, $status, $this->role_id, $this->id);
+        $statement->bind_param("ssssii", $name, $email, $password, $status, $this->role_id, $this->id);
 
         if ($statement->execute()) {
             return true;
