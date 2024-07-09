@@ -30,7 +30,10 @@ if (session_status() == PHP_SESSION_NONE) {
                 <button class="btn btn-sm btn-outline-success me-2" type="button"><a class="nav-link" href="index.php">Todos</a></button>
                 </li>
                 <li class="nav-item">
-                <button class="btn btn-sm btn-outline-success" type="button"><a class="nav-link" href="home.php">Users</a></button>
+                <button class="btn btn-sm btn-outline-success me-2" type="button"><a class="nav-link" href="home.php">Users</a></button>
+                </li>
+                <li class="nav-item">
+                <button class="btn btn-sm btn-outline-success" type="button"><a class="nav-link" href="manage_roles.php">Roles</a></button>
                 </li>
             </ul>
         </div>
