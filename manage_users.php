@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_user'])) {
         $user = new User($conn, $_POST['name'], $_POST['email'], $_POST['status'], $_POST['role_id'], $_POST['id']);
         $user->create();
-    } elseif (isset($_POST['update_user'])) {
+    } elseif (isset($_POST['update_user']) && isset($_POST['id'])) {
         $user = User::find($conn, $_POST['id']);
         if ($user) {
             $user->setName($_POST['name']);
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user->setRoleId($_POST['role_id']);
             $user->update();
         }
-    } elseif (isset($_POST['delete_user'])) {
+    } elseif (isset($_POST['delete_user']) && isset($_POST['id'])) {
         $user = User::find($conn, $_POST['id']);
         if ($user) {
             $user->delete();
@@ -42,7 +42,9 @@ foreach ($roles as $role) {
 <body>
     <div class="container mt-5">
         <h1>Manage Users</h1>
-
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="manage_roles.php"><button class="btn btn-primary" type="button">ManageRoles</button></a>
+        </div>
         <form method="POST" class="mb-5">
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
