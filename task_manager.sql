@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 08, 2024 at 08:16 AM
+-- Generation Time: Jul 10, 2024 at 07:06 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -20,6 +20,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `task_manager`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` int NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`) VALUES
+(4, 'General Manager'),
+(5, 'Product Manager');
 
 -- --------------------------------------------------------
 
@@ -67,35 +86,42 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `role_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Mattez', 'matfeks@gmail.com', 'password', 'active', '2024-06-08 08:56:27', '2024-07-03 18:17:40'),
-(2, 'Tobi', 'tobi@gmail.com', 'password', 'inactive', '2024-06-08 15:32:30', '2024-07-03 18:17:52'),
-(6, 'Ayo', 'ayo@gmail.com', 'password', 'inactive', '2024-06-08 15:48:04', '2024-07-03 18:18:00'),
-(7, 'David', 'david@gmail.com', 'password', 'inactive', '2024-06-08 15:52:21', '2024-07-05 16:38:00'),
-(8, 'John Mike', 'johnmike@gmail.com', 'password', 'active', '2024-06-08 15:54:50', '2024-07-03 18:18:15'),
-(9, 'Jane Doe', 'janedoe@gmail.com', 'password', 'active', '2024-06-08 16:17:57', '2024-07-03 18:18:23'),
-(10, 'Christal', 'christal@gmail.com', 'password', 'active', '2024-06-08 16:36:09', '2024-07-03 18:18:31'),
-(11, 'Derek', 'derek1@gmail.com', 'password', 'inactive', '2024-06-08 16:42:06', '2024-07-05 16:37:49'),
-(12, 'Matthew', 'matthewfeks@gmail.com', 'password', 'inactive', '2024-06-10 14:37:18', '2024-07-03 18:18:47'),
-(14, 'Gloria', 'glofeks1@gmail.com', 'password', 'inactive', '2024-06-15 09:18:47', '2024-07-03 18:18:54'),
-(15, 'Kola', 'kola1@gmail.com', 'password', 'active', '2024-06-26 21:11:36', '2024-07-03 18:19:01'),
-(16, 'Jennifer', 'jennifer1@gmail.com', 'password', 'active', '2024-06-27 12:41:22', '2024-07-03 18:19:09'),
-(17, 'Emma', 'emma@gmail.com', 'password', 'active', '2024-06-27 19:58:13', '2024-07-03 18:19:16'),
-(18, 'John', 'john@gmail.com', 'password', 'active', '2024-07-01 20:46:55', '2024-07-03 18:19:59'),
-(19, 'Sola', 'sola@gmail.com', '$2y$10$cugXsqa64ANAAp.4WApybOlwvYshHfGxsQrZ2QTx5NQlwQic/e9fO', 'inactive', '2024-07-04 21:55:10', '2024-07-04 22:24:13'),
-(20, 'Faith', 'faith@gmail.com', '$2y$10$wG1GO/ANLkJYm1WA2O0w7eFzNptQ9QGN/dKwnMz0AKitLzIDzWxpu', 'active', '2024-07-04 22:15:38', '2024-07-04 22:15:38'),
-(21, 'Salome', 'salome@gmail.com', '$2y$10$mbcasG8kU6.o5DUacSFkT.xLbaHX8MesC.iFHoMNCb4/Boo.gfQaK', 'active', '2024-07-04 22:35:19', '2024-07-04 22:35:19');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `status`, `created_at`, `updated_at`, `role_id`) VALUES
+(1, 'Mattez', 'matfeks@gmail.com', 'password', 'active', '2024-06-08 08:56:27', '2024-07-03 18:17:40', NULL),
+(2, 'Tobi', 'tobi@gmail.com', 'password', 'inactive', '2024-06-08 15:32:30', '2024-07-03 18:17:52', NULL),
+(6, 'Ayo', 'ayo@gmail.com', 'password', 'inactive', '2024-06-08 15:48:04', '2024-07-03 18:18:00', NULL),
+(7, 'David', 'david@gmail.com', 'password', 'inactive', '2024-06-08 15:52:21', '2024-07-05 16:38:00', NULL),
+(8, 'John Mike', 'johnmike@gmail.com', 'password', 'active', '2024-06-08 15:54:50', '2024-07-03 18:18:15', NULL),
+(9, 'Jane Doe', 'janedoe@gmail.com', 'password', 'active', '2024-06-08 16:17:57', '2024-07-03 18:18:23', NULL),
+(10, 'Christal', 'christal@gmail.com', 'password', 'active', '2024-06-08 16:36:09', '2024-07-03 18:18:31', NULL),
+(11, 'Derek', 'derek1@gmail.com', 'password', 'inactive', '2024-06-08 16:42:06', '2024-07-05 16:37:49', NULL),
+(12, 'Matthew', 'matthewfeks@gmail.com', 'password', 'inactive', '2024-06-10 14:37:18', '2024-07-03 18:18:47', NULL),
+(14, 'Gloria', 'glofeks1@gmail.com', 'password', 'inactive', '2024-06-15 09:18:47', '2024-07-03 18:18:54', NULL),
+(15, 'Kola', 'kola1@gmail.com', 'password', 'active', '2024-06-26 21:11:36', '2024-07-03 18:19:01', NULL),
+(16, 'Jennifer', 'jennifer1@gmail.com', 'password', 'active', '2024-06-27 12:41:22', '2024-07-03 18:19:09', NULL),
+(17, 'Emma', 'emma@gmail.com', 'password', 'active', '2024-06-27 19:58:13', '2024-07-03 18:19:16', NULL),
+(18, 'John', 'john@gmail.com', 'password', 'active', '2024-07-01 20:46:55', '2024-07-03 18:19:59', NULL),
+(19, 'Sola', 'sola@gmail.com', '$2y$10$cugXsqa64ANAAp.4WApybOlwvYshHfGxsQrZ2QTx5NQlwQic/e9fO', 'inactive', '2024-07-04 21:55:10', '2024-07-04 22:24:13', NULL),
+(20, 'Faith', 'faith@gmail.com', '$2y$10$wG1GO/ANLkJYm1WA2O0w7eFzNptQ9QGN/dKwnMz0AKitLzIDzWxpu', 'active', '2024-07-04 22:15:38', '2024-07-04 22:15:38', NULL),
+(21, 'Salome', 'salome@gmail.com', '$2y$10$mbcasG8kU6.o5DUacSFkT.xLbaHX8MesC.iFHoMNCb4/Boo.gfQaK', 'active', '2024-07-04 22:35:19', '2024-07-04 22:35:19', NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `todos`
@@ -109,11 +135,18 @@ ALTER TABLE `todos`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `role_id` (`role_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `todos`
@@ -125,7 +158,7 @@ ALTER TABLE `todos`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Constraints for dumped tables
@@ -136,6 +169,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `todos`
   ADD CONSTRAINT `todos_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
