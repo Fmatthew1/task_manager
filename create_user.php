@@ -31,8 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password'])) {
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            // var_dump($hashedPassword);
-            // exit();
+           
         // Create a new user without passing the $id
         $user = new User($conn, $name, $email, $hashedPassword, $status, $role_id);
 
