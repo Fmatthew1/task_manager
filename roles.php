@@ -19,6 +19,7 @@ Class Role {
     public function setName($name){
         $this->name = $name;
     }
+ 
     public function getName(){
         return $this->name;
     }
@@ -26,8 +27,6 @@ Class Role {
     public static function findAll($conn) {
         $sql = "SELECT * FROM roles";
         $result = $conn->query($sql);
-        // var_dump($sql);
-        // exit;
 
         $roles = [];
         while ($row = $result->fetch_assoc()) {
@@ -51,19 +50,64 @@ Class Role {
         }
     }
 
+    public static function roleExists($conn, $name) {
+        $sql = "SELECT * FROM roles WHERE name = ?";
+        $statement = $conn->prepare($sql);
+        $statement->bind_param("s", $name);
+        $statement->execute();
+        $result = $statement->get_result();
+        return $result->num_rows > 0;
+    }
+
     public function create() {
+        if (self::roleExists($this->conn, $this->name)) {
+            return false;
+        }
+
+        $name = $this->conn->real_escape_string($this->name);
         $sql = "INSERT INTO roles (name) VALUES (?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("s", $this->name);
-        return $stmt->execute();
+        $statement = $this->conn->prepare($sql);
+
+        if ($statement === false) {
+            error_log("Statement preparation failed: " . $this->conn->error);
+            return false;
+        }
+
+        $statement->bind_param("s", $name);
+
+        if ($statement->execute()) {
+            $this->id = $this->conn->insert_id;
+            return true;
+        } else {
+            error_log("Statement execution failed: " . $statement->error);
+            return false;
+        }
     }
 
     public function update() {
+        if (empty($this->name)) {
+            return false; // Validation: Role name cannot be empty
+        }
+
+        $name = $this->conn->real_escape_string($this->name);
         $sql = "UPDATE roles SET name = ? WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("si", $this->name, $this->id);
-        return $stmt->execute();
+        $statement = $this->conn->prepare($sql);
+
+        if ($statement === false) {
+            error_log("Statement preparation failed: " . $this->conn->error);
+            return false;
+        }
+
+        $statement->bind_param("si", $name, $this->id);
+
+        if ($statement->execute()) {
+            return true;
+        } else {
+            error_log("Statement execution failed: " . $statement->error);
+            return false;
+        }
     }
+
 
     public function delete() {
         $sql = "DELETE FROM roles WHERE id = ?";
