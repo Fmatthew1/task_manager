@@ -4,7 +4,7 @@ include 'users.php';
 include 'roles.php';
 
 $name = "";
-$errorMessages = ["name" => ""];
+$errorMessages = ["name" => "", "general" => ""];
 $success = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['update_role']) && isset($_POST['id'])) {
         $roleId = $_POST['id'];
-        $roleName = $_POST['name'];
+        $roleName = trim($_POST['name']);
         $role = Role::find($conn, $roleId);
 
         if ($role) {
@@ -126,3 +126,7 @@ $roles = Role::findAll($conn);
     </div>
 </body>
 </html>
+
+
+
+
