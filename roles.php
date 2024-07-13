@@ -1,5 +1,4 @@
 <?php
-
 Class Role {
     private $conn;
     private $name;
@@ -83,7 +82,6 @@ Class Role {
             return false;
         }
     }
-
     public function update() {
         if (empty($this->name)) {
             return false; // Validation: Role name cannot be empty
@@ -107,8 +105,6 @@ Class Role {
             return false;
         }
     }
-
-
     public function delete() {
         $sql = "DELETE FROM roles WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
