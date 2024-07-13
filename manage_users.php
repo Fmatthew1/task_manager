@@ -4,13 +4,15 @@ include 'users.php';
 include 'roles.php';
 
 $name = $email = "";
-$errorMessages = ["name" => "", "email" => "", "password" => "", "general" => ""];
+$errorMessages = ["name" => "", "email" => "", "password" => "", "status" => "", "role_id" => "", "general" => ""];
+$success = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = isset($_POST["name"]) ? trim($_POST["name"]) : "";
     $email = isset($_POST["email"]) ? trim($_POST["email"]) : "";
     $password = isset($_POST["password"]) ? $_POST["password"] : "";
-    $status = 'active';
+    $status = isset($_POST["status"]) ? trim($_POST["status"]) : "";
+    $role_id = isset($_POST["role_id"]) ? $_POST["role_id"] : "";
 
     if (empty($name)) {
         $errorMessages['name'] = "Name is required.";
@@ -22,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorMessages['email'] = "Invalid email format.";
     } else {
         $existingUser = User::findByEmail($conn, $email);
+        
         if ($existingUser && (!isset($user) || $existingUser->getId() !== $user->getId())) {
             $errorMessages['email'] = "Error: Email already exists.";
         }
@@ -31,29 +34,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorMessages['password'] = "Password is required.";
     }
 
-    if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password'])) {
+    if (empty($status)) {
+        $errorMessages['status'] = "Status is required.";
+    }
+
+    if (empty($role_id)) {
+        $errorMessages['role_id'] = "Role is required.";
+    }
+
+    if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password']) && empty($errorMessages['status']) && empty($errorMessages['role_id'])) {
         if (isset($_POST['create_user'])) {
             $user = new User($conn, $_POST['name'], $_POST['email'], $_POST['password'], $_POST['status'], $_POST['role_id']);
-            $user->create();
+            if ($user->create()) {
+                $success = "User created successfully!";
+            } else {
+                $errorMessages['general'] = "Failed to create user. Please try again.";
+            }
         } elseif (isset($_POST['update_user']) && isset($_POST['id'])) {
             $user = User::find($conn, $_POST['id']);
+           
             if ($user) {
                 $user->setName($_POST['name']);
                 $user->setEmail($_POST['email']);
                 $user->setStatus($_POST['status']);
                 $user->setRoleId($_POST['role_id']);
-                $user->update();
+                if ($user->update()) {
+                    $success = "User updated successfully!";
+                } else {
+                    $errorMessages['general'] = "Failed to update user. Please try again.";
+                }
             }
         } elseif (isset($_POST['delete_user']) && isset($_POST['id'])) {
             $user = User::find($conn, $_POST['id']);
             if ($user) {
-                $user->delete();
+                if ($user->delete()) {
+                    $success = "User deleted successfully!";
+                   header("Location: manage_users.php");
+                   exit();
+                } else {
+                    $errorMessages['general'] = "Failed to delete user. Please try again.";
+                }
             }
         } elseif (isset($_POST['toggle_status']) && isset($_POST['id'])) {
             $user = User::find($conn, $_POST['id']);
             if ($user) {
-                $user->toggleStatus();
+                if ($user->toggleStatus()) {
+
+                    $success = "User status toggled successfully!";
+                } else {
+                    $errorMessages['general'] = "Failed to toggle status. Please try again.";
+                }
             }
+            header("Location: manage_users.php");
+            exit();
         }
     }
 }
@@ -83,26 +116,29 @@ foreach ($roles as $role) {
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
                 <?php if (!empty($errorMessages['name'])): ?>
-                    <div class = "text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
-                    <?php endif; ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
                 <?php if(!empty($errorMessages['email'])): ?>
-                    <div class = "text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
-                    <?php endif; ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
                 <?php if(!empty($errorMessages['password'])): ?>
-                    <div class = "text-danger mt-2"><?php echo $errorMessages['password']; ?></div>
-                    <?php endif; ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['password']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
                 <input type="text" class="form-control" id="status" name="status" required>
+                <?php if(!empty($errorMessages['status'])): ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['status']; ?></div>
+                <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="role_id" class="form-label">Role</label>
@@ -111,9 +147,15 @@ foreach ($roles as $role) {
                         <option value="<?php echo $role->getId(); ?>"><?php echo htmlspecialchars($role->getName()); ?></option>
                     <?php endforeach; ?>
                 </select>
+                <?php if(!empty($errorMessages['role_id'])): ?>
+                    <div class="text-danger mt-2"><?php echo $errorMessages['role_id']; ?></div>
+                <?php endif; ?>
             </div>
             <?php if (!empty($errorMessages['general'])): ?>
                 <div class="text-danger mb-3"><?php echo $errorMessages['general']; ?></div>
+            <?php endif; ?>
+            <?php if ($success): ?>
+                <div class="alert alert-success mb-3"><?php echo $success; ?></div>
             <?php endif; ?>
             <button type="submit" class="btn btn-primary" name="create_user">Create User</button>
         </form>
@@ -131,9 +173,9 @@ foreach ($roles as $role) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($users as $user): ?>
+                <?php foreach ($users as $index => $user): ?>
                     <tr>
-                        <td><?php echo $user->getId(); ?></td>
+                        <td><?php echo $index + 1; ?></td>
                         <td><?php echo htmlspecialchars($user->getName()); ?></td>
                         <td><?php echo htmlspecialchars($user->getEmail()); ?></td>
                         <td><?php echo htmlspecialchars($user->getStatus()); ?></td>
@@ -148,16 +190,13 @@ foreach ($roles as $role) {
                         </td>
                         <td>
                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal<?php echo $user->getId(); ?>">Edit</button>
-                            <form method="POST" class="d-inline">
+                            <form action = "delete_user.php" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                 <input type="hidden" name="id" value="<?php echo $user->getId(); ?>">
                                 <button type="submit" class="btn btn-danger btn-sm" name="delete_user">Delete</button>
                             </form>
-                            <form method="POST" class="d-inline">
-                                <input type="hidden" name="id" value="<?php echo $user->getId(); ?>">
-                                <button type="submit" class="btn btn-secondary btn-sm" name="toggle_status">
-                                    <?php echo $user->getStatus() === 'active' ? 'Deactivate' : 'Activate'; ?>
-                                </button>
-                            </form>
+                            <a href="toggle_user.php?id=<?php echo $user->getId(); ?>" class="btn btn-warning">
+                            <?php echo ($user->getStatus() === 'active') ? 'Deactivate' : 'Activate'; ?>
+                            </a>
                         </td>
                     </tr>
 
@@ -169,7 +208,7 @@ foreach ($roles as $role) {
                                     <h5 class="modal-title" id="editUserModalLabel<?php echo $user->getId(); ?>">Edit User</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <form method="POST">
+                                <form action ="" aria-autocomplete=""method="POST">
                                     <div class="modal-body">
                                         <input type="hidden" name="id" value="<?php echo $user->getId(); ?>">
                                         <div class="mb-3">
@@ -189,6 +228,9 @@ foreach ($roles as $role) {
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Status</label>
                                             <input type="text" class="form-control" name="status" value="<?php echo htmlspecialchars($user->getStatus()); ?>" required>
+                                            <?php if (!empty($errorMessages['status'])): ?>
+                                            <div class="text-danger mt-2"><?php echo $errorMessages['status']; ?></div>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="mb-3">
                                             <label for="role_id" class="form-label">Role</label>
@@ -197,6 +239,9 @@ foreach ($roles as $role) {
                                                     <option value="<?php echo $role->getId(); ?>" <?php echo $role->getId() == $user->getRoleId() ? 'selected' : ''; ?>><?php echo htmlspecialchars($role->getName()); ?></option>
                                                 <?php endforeach; ?>
                                             </select>
+                                            <?php if (!empty($errorMessages['role_id'])): ?>
+                                            <div class="text-danger mt-2"><?php echo $errorMessages['role_id']; ?></div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
