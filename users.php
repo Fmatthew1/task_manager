@@ -73,9 +73,6 @@ class User {
             return $this->update();
         }
     }
-
-   
-    
     public static function findAll($conn) {
         $sql = "SELECT * FROM users ORDER BY created_at DESC";
         $statement = $conn->prepare($sql);
@@ -103,7 +100,6 @@ class User {
             return null;
         }
     }
-
     public static function findAllActive($conn) {
         $sql = "SELECT * FROM users WHERE status = 'active' ";
         $result = $conn->query($sql);
@@ -121,8 +117,6 @@ class User {
         }
         return $users;
     }
-
-
     public static function findByEmail($conn, $email) {
         $sql = "SELECT * FROM users WHERE email=?";
         $stmt = $conn->prepare($sql);
@@ -143,9 +137,7 @@ class User {
         }
             return null;
         
-    }
-
-    
+    } 
     public static function emailExists($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = ?";
         $statement = $conn->prepare($sql);
@@ -204,10 +196,30 @@ class User {
         }
     }
 
-    // Toggle user status
+    public function delete() {
+        global $conn;
+
+        // First, delete the associated todos
+        $query = "DELETE FROM todos WHERE user_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $this->id);
+
+        if ($stmt->execute()) {
+            // Now delete the user
+            $query = "DELETE FROM users WHERE id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $this->id);
+            return $stmt->execute();
+        } else {
+            return false;
+        }
+    }
+
+    //Toggle user status
     public function toggleStatus() {
         $this->status = ($this->status === 'active') ? 'inactive' : 'active';
         return $this->save();
     }
+    
 }
 
