@@ -76,7 +76,9 @@ $roles = Role::findAll($conn);
         <h1>Manage Roles</h1>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="manage_users.php"><button class="btn btn-primary" type="button">Manage Users</button></a>
+            <a href="home.php"><button class="btn btn-primary" type="button">Home</button></a>
         </div>
+
         <form method="POST" class="mb-5">
             <div class="mb-3">
                 <label for="name" class="form-label">Role Name</label>
@@ -112,7 +114,7 @@ $roles = Role::findAll($conn);
                         <form method="POST" class="d-inline">
                             <input type="hidden" name="id" value="<?php echo $role->getId(); ?>">
                             <input type="text" name="name" value="<?php echo htmlspecialchars($role->getName()); ?>" required>
-                            <button type="submit" class="btn btn-warning btn-sm" name="update_role">Update</button>
+                            <button type="submit" class="btn btn-info btn-sm" name="update_role">Update</button>
                         </form>
                         <form method="POST" class="d-inline">
                             <input type="hidden" name="id" value="<?php echo $role->getId(); ?>">
