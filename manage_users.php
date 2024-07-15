@@ -25,8 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $existingUser = User::findByEmail($conn, $email);
         
-        if ($existingUser && (!isset($user) || $existingUser->getId() !== $user->getId())) {
-            $errorMessages['email'] = "Error: Email already exists.";
+       
+        if (isset($_POST['id'])) {
+            $user = User::find($conn, $_POST['id']);
+            if ($user && $email !== $user->getEmail() && $existingUser) {
+                $errorMessages['email'] = "Error: Email already exists.";
+            }
+        } else {
+            if ($existingUser) {
+                $errorMessages['email'] = "Error: Email already exists.";
+            }
         }
     }
 
@@ -110,18 +118,19 @@ foreach ($roles as $role) {
         <h1>Manage Users</h1>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="manage_roles.php"><button class="btn btn-primary" type="button">Manage Roles</button></a>
+            <a href="home.php"><button class="btn btn-primary" type="button">Home</button></a>
         </div>
         <form method="POST" class="mb-5">
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name">
                 <?php if (!empty($errorMessages['name'])): ?>
                     <div class="text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
                 <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email">
                 <?php if(!empty($errorMessages['email'])): ?>
                     <div class="text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
                 <?php endif; ?>
@@ -135,16 +144,19 @@ foreach ($roles as $role) {
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
-                <input type="text" class="form-control" id="status" name="status" required>
+                <select class="form-control" id="status" name="status">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
                 <?php if(!empty($errorMessages['status'])): ?>
                     <div class="text-danger mt-2"><?php echo $errorMessages['status']; ?></div>
                 <?php endif; ?>
             </div>
             <div class="mb-3">
                 <label for="role_id" class="form-label">Role</label>
-                <select class="form-control" id="role_id" name="role_id" required>
+                <select class="form-control" id="role_id" name="role_id">
                     <?php foreach ($roles as $role): ?>
-                        <option value="<?php echo $role->getId(); ?>"><?php echo htmlspecialchars($role->getName()); ?></option>
+                        <option></option>
                     <?php endforeach; ?>
                 </select>
                 <?php if(!empty($errorMessages['role_id'])): ?>
@@ -189,7 +201,7 @@ foreach ($roles as $role) {
                             ?>
                         </td>
                         <td>
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal<?php echo $user->getId(); ?>">Edit</button>
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal<?php echo $user->getId(); ?>">Edit</button>
                             <form action = "delete_user.php" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                 <input type="hidden" name="id" value="<?php echo $user->getId(); ?>">
                                 <button type="submit" class="btn btn-danger btn-sm" name="delete_user">Delete</button>
@@ -213,28 +225,28 @@ foreach ($roles as $role) {
                                         <input type="hidden" name="id" value="<?php echo $user->getId(); ?>">
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($user->getName()); ?>" required>
+                                            <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($user->getName()); ?>">
                                             <?php if (!empty($errorMessages['name'])): ?>
                                             <div class="text-danger mt-2"><?php echo $errorMessages['name']; ?></div>
                                             <?php endif; ?>
                                         </div>
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars($user->getEmail()); ?>" required>
+                                            <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars($user->getEmail()); ?>">
                                             <?php if (!empty($errorMessages['email'])): ?>
                                             <div class="text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
                                             <?php endif; ?>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="status" class="form-label">Status</label>
-                                            <input type="text" class="form-control" name="status" value="<?php echo htmlspecialchars($user->getStatus()); ?>" required>
-                                            <?php if (!empty($errorMessages['status'])): ?>
-                                            <div class="text-danger mt-2"><?php echo $errorMessages['status']; ?></div>
-                                            <?php endif; ?>
+                                            <label for="status<?php echo $user->getId(); ?>" class="form-label">Status</label>
+                                            <select class="form-control" id="status<?php echo $user->getId(); ?>" name="status">
+                                                <option value="active" <?php if ($user->getStatus() == 'active') echo 'selected'; ?>>Active</option>
+                                                <option value="inactive" <?php if ($user->getStatus() == 'inactive') echo 'selected'; ?>>Inactive</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label for="role_id" class="form-label">Role</label>
-                                            <select class="form-control" name="role_id" required>
+                                            <select class="form-control" name="role_id">
                                                 <?php foreach ($roles as $role): ?>
                                                     <option value="<?php echo $role->getId(); ?>" <?php echo $role->getId() == $user->getRoleId() ? 'selected' : ''; ?>><?php echo htmlspecialchars($role->getName()); ?></option>
                                                 <?php endforeach; ?>
