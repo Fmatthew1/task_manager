@@ -245,15 +245,15 @@ foreach ($roles as $role) {
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="role_id" class="form-label">Role</label>
-                                            <select class="form-control" name="role_id">
+                                            <label for="role_id<?php echo $user->getId(); ?>" class="form-label">Role</label>
+                                            <select class="form-control" id="role_id<?php echo $user->getId(); ?>" name="role_id">
+                                                <option value="">Select a role</option>
                                                 <?php foreach ($roles as $role): ?>
-                                                    <option value="<?php echo $role->getId(); ?>" <?php echo $role->getId() == $user->getRoleId() ? 'selected' : ''; ?>><?php echo htmlspecialchars($role->getName()); ?></option>
+                                                    <option value="<?php echo $role->getId(); ?>" <?php echo $user->getRoleId() == $role->getId() ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($role->getName()); ?>
+                                                    </option>
                                                 <?php endforeach; ?>
                                             </select>
-                                            <?php if (!empty($errorMessages['role_id'])): ?>
-                                            <div class="text-danger mt-2"><?php echo $errorMessages['role_id']; ?></div>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="modal-footer">

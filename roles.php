@@ -105,11 +105,28 @@ Class Role {
             return false;
         }
     }
+    // public function delete() {
+    //     $sql = "DELETE FROM roles WHERE id = ?";
+    //     $stmt = $this->conn->prepare($sql);
+    //     $stmt->bind_param("i", $this->id);
+    //     return $stmt->execute();
+    // } 
+
     public function delete() {
-        $sql = "DELETE FROM roles WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $this->conn->prepare("DELETE FROM users WHERE role_id = ?");
         $stmt->bind_param("i", $this->id);
-        return $stmt->execute();
+        $stmt->execute();
+        $stmt->close();
+
+        $stmt = $this->conn->prepare("DELETE FROM roles WHERE id = ?");
+        $stmt->bind_param("i", $this->id);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result;
     }
+
+   
+      
 
 }

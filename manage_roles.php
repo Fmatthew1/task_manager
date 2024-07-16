@@ -59,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errorMessages['general'] = 'Failed to delete role. Please try again.';
             }
         }
-    }
+    } 
+      
 }
 
 $roles = Role::findAll($conn);
@@ -80,7 +81,7 @@ $roles = Role::findAll($conn);
         </div>
 
         <form method="POST" class="mb-5">
-            <div class="mb-3">
+            <div class="mb-3"> 
                 <label for="name" class="form-label">Role Name</label>
                 <input type="text" class="form-control" id="name" name="name">
                 <?php if (!empty($errorMessages['name'])): ?>
