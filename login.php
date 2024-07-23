@@ -2,6 +2,7 @@
 session_start();
 require 'Db.php'; // Make sure to include your database connection
 require 'users.php'; // Include the User class
+require 'roles.php';
 
 $email = "";
 $errorMessages = ["email" => "", "password" => "", "general" => ""];
@@ -24,18 +25,25 @@ $errorMessages = ["email" => "", "password" => "", "general" => ""];
         if (empty($errorMessages['email']) && empty($errorMessages['password'])) {
 
         // Query to get the user by email
-           $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-            if ($stmt === false) {
-                die('Prepare failed: ' . htmlspecialchars($conn->error));
-            }
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $user = $result->fetch_assoc(); 
-
-            
+        //    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        //     if ($stmt === false) {
+        //         die('Prepare failed: ' . htmlspecialchars($conn->error));
+        //     }
+        //     $stmt->bind_param("s", $email);
+        //     $stmt->execute();
+        //     $result = $stmt->get_result();
+        //     $user = $result->fetch_assoc(); 
+                $sql = "SELECT id, password, role_id FROM users WHERE email = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $user = $result->fetch_assoc();
+    
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role_id'] = $user['role_id'];
+            
             header("Location: home.php");
             exit;
         } else {
@@ -44,10 +52,10 @@ $errorMessages = ["email" => "", "password" => "", "general" => ""];
         }
 
         $stmt->close();
-    
-
         }
-}
+
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +79,6 @@ $errorMessages = ["email" => "", "password" => "", "general" => ""];
                     <div class = "text-danger mt-2"><?php echo $errorMessages['email']; ?></div>
                     <?php endif; ?>
         </div>
-    
         <label for="password">Password:</label>
         <div class="form-group mb-3">
         <input type="password" name="password">
@@ -84,3 +91,4 @@ $errorMessages = ["email" => "", "password" => "", "general" => ""];
     </div>
 </body>
 </html>
+    
