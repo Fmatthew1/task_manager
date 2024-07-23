@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'Db.php'; // Include the database connection script
 include 'todo.php'; // Include the Todo class
 include 'users.php';

@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'Db.php';
 include 'users.php';
 
@@ -8,8 +9,12 @@ $errorMessages = ["name" => "", "email" => "", "password" => "", "general" => ""
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
-    $password = $_POST["password"];
+    $password = isset($_POST['password']) ? $_POST['password'] : "";
+    $role_id = isset($_POST['role_id']) ? $_POST['role_id'] : "";
     $status = 'active';
+
+     // Hash the password
+     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     //server-side validation
     if (empty($name)){
@@ -28,9 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessages['password'] = "Password is required.";
     }
 
-        if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password'])) {
-
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        if (empty($errorMessages['name']) && empty($errorMessages['email']) && empty($errorMessages['password'])) {      
            
         // Create a new user without passing the $id
         $user = new User($conn, $name, $email, $hashedPassword, $status, $role_id);

@@ -1,5 +1,4 @@
 <?php
-
 class Todo {
     private $conn;
     private $name;

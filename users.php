@@ -146,23 +146,55 @@ class User {
         $result = $statement->get_result();
         return $result->num_rows > 0;
     }
+    // public function create() {
+    //     $name = $this->conn->real_escape_string($this->name);
+    //     $email = $this->conn->real_escape_string($this->email);
+    //     $status = $this->status;
+    //     $role_id = $this->role_id;
+    //     $password = $this->password;
+
+    //     $sql = "INSERT INTO users (name, email, role_id, password, status) VALUES (?, ?, ?, ?, ?)";
+    //     $statement = $this->conn->prepare($sql);
+
+    //     if ($statement === false) {
+    //         error_log("Statement preparation failed: " . $this->conn->error);
+    //         return false;
+    //     }
+
+    //     $statement->bind_param("ssiss", $name, $email, $role_id, $password, $status);
+
+    //     if ($statement->execute()) {
+    //         $this->id = $this->conn->insert_id;
+    //         return true;
+    //     } else {
+    //         error_log("Statement execution failed: " . $statement->error);
+    //         return false;
+    //     }
+    // } 
+
     public function create() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);
-        $status = $this->status;
+        $status = $this->conn->real_escape_string($this->status);
         $role_id = $this->role_id;
         $password = $this->password;
-
+    
+        // Check if status is valid
+        if (!in_array($status, ['active', 'inactive'])) {
+            error_log("Invalid status: " . $status);
+            return false;
+        }
+    
         $sql = "INSERT INTO users (name, email, role_id, password, status) VALUES (?, ?, ?, ?, ?)";
         $statement = $this->conn->prepare($sql);
-
+    
         if ($statement === false) {
             error_log("Statement preparation failed: " . $this->conn->error);
             return false;
         }
-
-        $statement->bind_param("ssss", $name, $email, $password, $status);
-
+    
+        $statement->bind_param("ssiss", $name, $email, $role_id, $password, $status);
+    
         if ($statement->execute()) {
             $this->id = $this->conn->insert_id;
             return true;
@@ -171,6 +203,7 @@ class User {
             return false;
         }
     }
+    
     public function update() {
         $name = $this->conn->real_escape_string($this->name);
         $email = $this->conn->real_escape_string($this->email);

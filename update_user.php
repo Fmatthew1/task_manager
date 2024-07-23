@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'Db.php';
 include 'users.php';
 
@@ -13,7 +14,6 @@ $user = User::find($conn, $id);
 if (!$user) {
     die("User not found");
 }
-
 
 $name = $email = "";
 $errorMessages = ["name" => "", "email" => ""];

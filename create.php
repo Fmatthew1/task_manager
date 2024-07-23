@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'Db.php';   // Assuming Db.php contains database connection logic
 include 'todo.php'; // Assuming todo.php contains Todo class definition
 include 'users.php'; // Assuming users.php contains User class definition
@@ -30,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($errorMessages['name'])) {
     // Create a new Todo object
-    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, null, $completed_at, $user_id); // Passing null for $id as it's usually auto-incremented
+    $todo = new Todo($conn, $name, $is_completed, $created_at, $updated_at, $id = null, $completed_at, $user_id); // Passing null for $id as it's usually auto-incremented
 
     // Save the new todo
     $result = $todo->create();
