@@ -1,7 +1,12 @@
 <?php
+session_start();
 include 'Db.php';
 include 'todo.php';
 include 'users.php';
+
+checkAuth();
+checkRole('Todo Manager');
+
 
 $todos = Todo::findAll($conn);
 ?>

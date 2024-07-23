@@ -1,7 +1,12 @@
 <?php
+session_start();
 include 'Db.php';
 include 'users.php';
 include 'roles.php';
+
+checkAuth();
+checkRole('User Manager');
+
 
 $name = "";
 $errorMessages = ["name" => "", "general" => ""];
@@ -73,6 +78,7 @@ $roles = Role::findAll($conn);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<?php include 'navbar.php'; ?> <!-- Include the navbar here -->
     <div class="container mt-5">
         <h1>Manage Roles</h1>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">

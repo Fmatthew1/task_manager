@@ -3,6 +3,9 @@ session_start();
 include 'Db.php';
 include 'users.php';
 
+checkAuth();
+checkRole('User Manager');
+
 $users = User::findAll($conn);
 
 if (!isset($_SESSION['user_id'])) {
