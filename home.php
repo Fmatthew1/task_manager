@@ -3,8 +3,8 @@ session_start();
 include 'Db.php';
 include 'users.php';
 
-checkAuth();
-checkRole('User Manager');
+// checkAuth();
+// checkRole('User Manager');
 
 $users = User::findAll($conn);
 
